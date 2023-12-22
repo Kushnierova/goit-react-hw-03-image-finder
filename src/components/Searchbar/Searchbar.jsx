@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import css from './Searchbar.module.css'
+import css from './Searchbar.module.css';
 import { ImSearch } from 'react-icons/im';
 
 class Searchbar extends Component {
@@ -8,11 +8,13 @@ class Searchbar extends Component {
     return (
       <div className={css.searchbar}>
         <form className={css.searchForm}>
-            <label htmlFor="">
-                            <button className={css.btn}><ImSearch style={{ marginRight: 8 }} /></button>
-            </label>
+          <label htmlFor="">
+            <button className={css.btn}>
+              <ImSearch className={css.btnLabel} />
+            </button>
+          </label>
 
-          <input />
+          <input className={css.input}/>
         </form>
       </div>
     );
