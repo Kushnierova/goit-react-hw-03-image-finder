@@ -24,7 +24,6 @@ class ImageGallery extends Component {
     if (prevName !== nextName) {
 
       this.setState({ status: 'pending' });
-      setTimeout(() => {
         fetch('https://pixabay.com/api/')
           .then(response => {
             if (response.ok) {
@@ -40,7 +39,6 @@ class ImageGallery extends Component {
             })
           )
           .catch(error => this.setState({ error, status: 'rejected' }));
-      }, 1000);
     }
   }
   render() {
@@ -48,7 +46,7 @@ class ImageGallery extends Component {
     const { searchText } = this.props;
 
     if (status === 'idle') {
-      return <p>Please, write search</p>;
+      return <p className={css.idleText}>Please, write search</p>;
     }
 
     if (status === 'pending') {

@@ -1,7 +1,7 @@
 import { ImSpinner } from 'react-icons/im';
 import css from './Loader.module.css';
 
-function Loader({ pokemonName }) {
+function Loader() {
 
   return (
     <div>
