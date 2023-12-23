@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import css from './ImageGallery.module.css';
-// import { fetchPhotosByKeyword } from '/Kateryna/GoIT/goit-react-hw-03-image-finder/src/services/api';
+// import {
+//   getAllPhoto,
+//   maxPhotos,
+// } from '/Kateryna/GoIT/goit-react-hw-03-image-finder/src/services/api';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
 
@@ -11,27 +14,34 @@ import Loader from 'components/Loader';
 
 class ImageGallery extends Component {
   state = {
-    pictures: null,
+    pictures: [],
+    photoTag: '',
     error: null,
     status: 'idle',
   };
   componentDidUpdate(prevProps, prevState) {
-    const prevName = prevProps.searchText;
-    const nextName = this.props.searchText;
+    const searchTag = this.state.photoTag;
 
-    if (prevName !== nextName) {
-      this.setState({ status: 'pending' });
-      fetch(`https://pixabay.com/api/${nextName}`)
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          }
-          return Promise.reject(new Error(`Soory, something is wrong`));
-        })
-        .then(pictures => this.setState({ pictures, status: 'resolved' }))
-        .catch(error => this.setState({ error, status: 'rejected' }));
+    if (prevState.photoTag !== searchTag) {
+      this.setState({ pictures: [] });
+      this.fetchPhoto(searchTag, this.state.page);
     }
   }
+  fetchPhoto = (searchTag, page) => {
+    const data = getAllPhoto(searchTag, page);
+
+    this.setState({ status: 'pending' });
+    fetch(data)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        return Promise.reject(new Error(`Soory, something is wrong`));
+      })
+      .then(this.setState({ pictures: data.hits, status: 'resolved' }))
+
+      .catch(error => this.setState({ error, status: 'rejected' }));
+  };
   render() {
     const { pictures, status, error } = this.state;
     const { searchText } = this.props;
