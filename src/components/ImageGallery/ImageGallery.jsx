@@ -11,34 +11,25 @@ import Loader from 'components/Loader';
 
 class ImageGallery extends Component {
   state = {
-    pictures: [],
-    pageNum: 1,
+    pictures: null,
     error: null,
     status: 'idle',
   };
   componentDidUpdate(prevProps, prevState) {
     const prevName = prevProps.searchText;
     const nextName = this.props.searchText;
-    const { pageNum } = this.state;
 
     if (prevName !== nextName) {
-
       this.setState({ status: 'pending' });
-        fetch('https://pixabay.com/api/')
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            }
-            return Promise.reject(new Error(`Soory, something is wrong`));
-          })
-          .then(pictures =>
-            this.setState({
-              pictures:
-                pageNum === 1 ? pictures : [...prevState.pictures, ...pictures],
-              status: 'resolved',
-            })
-          )
-          .catch(error => this.setState({ error, status: 'rejected' }));
+      fetch(`https://pixabay.com/api/${nextName}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          return Promise.reject(new Error(`Soory, something is wrong`));
+        })
+        .then(pictures => this.setState({ pictures, status: 'resolved' }))
+        .catch(error => this.setState({ error, status: 'rejected' }));
     }
   }
   render() {

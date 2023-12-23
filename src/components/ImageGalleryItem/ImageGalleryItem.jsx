@@ -4,7 +4,7 @@ const ImageGalleryItem = pictures => {
   return pictures.map(({ id, webformatURL, largeImageURL }) => {
     return (
       <li className={css.item} key={id}>
-        <img src="" alt="" className={css.img} />
+        <img src={webformatURL} alt="img" data-large={largeImageURL} className={css.img} />
       </li>
     );
   });
