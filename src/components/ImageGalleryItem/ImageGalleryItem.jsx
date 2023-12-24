@@ -1,12 +1,16 @@
 import css from './ImageGalleryItem.module.css';
 
-const ImageGalleryItem = pictures => {
-  return pictures.map(({ id, webformatURL, largeImageURL }) => {
-    return (
-      <li className={css.item} key={id}>
-        <img src={webformatURL} alt="img" data-large={largeImageURL} className={css.img} />
+function ImageGalleryItem = pictures => {
+return (  <ul className={css.imageGallery}>
+    {pictures.map(picture => (
+      <li className={css.item} key={picture.id}>
+        <img
+          src={picture.webformatURL}
+          alt={picture.tags}
+          className={css.img}
+        />
       </li>
-    );
-  });
+    ))}
+  </ul>;)
 };
 export default ImageGalleryItem;

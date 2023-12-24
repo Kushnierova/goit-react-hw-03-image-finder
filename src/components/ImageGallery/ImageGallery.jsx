@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import css from './ImageGallery.module.css';
-// import {
-//   getAllPhoto,
-//   maxPhotos,
-// } from '/Kateryna/GoIT/goit-react-hw-03-image-finder/src/services/api';
+import { PixabayApi } from 'components/services/api';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
 
@@ -14,59 +11,95 @@ import Loader from 'components/Loader';
 
 class ImageGallery extends Component {
   state = {
-    pictures: [],
-    photoTag: '',
+    pictures: null,
+    perPage: 12,
+    page: 1,
     error: null,
-    status: 'idle',
+    loading: false,
+    // status: 'idle',
   };
-  componentDidUpdate(prevProps, prevState) {
-    const searchTag = this.state.photoTag;
 
-    if (prevState.photoTag !== searchTag) {
-      this.setState({ pictures: [] });
-      this.fetchPhoto(searchTag, this.state.page);
-    }
+  componentDidMount() {
+    this.searchImages();
   }
-  fetchPhoto = (searchTag, page) => {
-    const data = getAllPhoto(searchTag, page);
 
-    this.setState({ status: 'pending' });
-    fetch(data)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(new Error(`Soory, something is wrong`));
-      })
-      .then(this.setState({ pictures: data.hits, status: 'resolved' }))
-
-      .catch(error => this.setState({ error, status: 'rejected' }));
-  };
-  render() {
-    const { pictures, status, error } = this.state;
+  componentDidUpdate(prevProps, prevState) {
+    // const { page } = this.state;
     const { searchText } = this.props;
 
-    if (status === 'idle') {
-      return <p className={css.idleText}>Please, write search</p>;
+    if (prevProps.searchText !== searchText) {
+      this.searchImages();
     }
+  }
 
-    if (status === 'pending') {
-      return <Loader searchText={searchText} />;
-    }
+  searchImages = async () => {
+    this.setState({ loading: true });
+    const { searchText } = this.props;
+    const { perPage } = this.state;
 
-    if (status === 'rejected') {
-      <div role="alert">
-        <h2>{error.message}</h2>
-      </div>;
-    }
-
-    if (status === 'resolved') {
-      return (
-        <ul className={css.gallery}>
-          <ImageGalleryItem pictures={pictures} />
-        </ul>
+    try {
+      const { hits, totalHits } = await PixabayApi.getImages(
+        searchText,
+        perPage
       );
+
+      this.setState({
+        pictures: hits,
+        totalPages: Math.ceil(totalHits / perPage),
+        page: 1,
+        loading: false,
+        error: null,
+      });
+
+      if (!hits.length) {
+        throw new Error('No images found');
+      }
+    } catch (error) {
+      this.setState({ loading: false, error });
     }
+  };
+
+  //     const searchTag = this.state.photoTag;
+
+  //     if (prevState.photoTag !== searchTag) {
+  //       this.setState({ pictures: [] });
+  //       this.fetchPhoto(searchTag, this.state.page);
+  //     }
+  //   }
+  //   fetchPhoto = (searchTag, page) => {
+  //     const data = getAllPhoto(searchTag, page);
+
+  //     this.setState({ status: 'pending' });
+  //     fetch(data)
+  //       .then(response => {
+  //         if (response.ok) {
+  //           return response.json();
+  //         }
+  //         return Promise.reject(new Error(`Soory, something is wrong`));
+  //       })
+  //       .then(this.setState({ pictures: data.hits, status: 'resolved' }))
+
+  //       .catch(error => this.setState({ error, status: 'rejected' }));
+  //   };
+  render() {
+    const { pictures, error, loading } = this.state;
+    // const { searchText } = this.props;
+
+    return (
+      pictures && (
+        <>
+          {loading && <Loader />}
+
+          <ImageGalleryItem pictures={pictures} />
+
+          {error?.message && (
+            <p className={css.errorMessage}>{error?.message}</p>
+          )}
+
+          {/* {canLoadMore && <Button onClick={this.loadMore} title="Load more" />} */}
+        </>
+      )
+    );
   }
 }
 export default ImageGallery;

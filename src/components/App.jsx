@@ -7,7 +7,7 @@ import ImageGallery from './ImageGallery';
 
 class App extends Component {
   state = {
-    searchText: '',
+    searchText: null,
   };
 
   handleFormSubmit = searchText => {
