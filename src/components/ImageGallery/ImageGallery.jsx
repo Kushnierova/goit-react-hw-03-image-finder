@@ -3,6 +3,7 @@ import css from './ImageGallery.module.css';
 import { PixabayApi } from 'components/services/api';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
+import Button from 'components/Button';
 
 class ImageGallery extends Component {
   state = {
@@ -29,14 +30,10 @@ class ImageGallery extends Component {
     const { perPage } = this.state;
 
     try {
-      const { hits, totalHits } = await PixabayApi.getImages(
-        searchText,
-        perPage
-      );
+      const { hits } = await PixabayApi.getImages(searchText, perPage);
 
       this.setState({
         pictures: hits,
-        totalPages: Math.ceil(totalHits / perPage),
         page: 1,
         status: 'resolved',
         error: null,
@@ -50,8 +47,14 @@ class ImageGallery extends Component {
     }
   };
 
+  loadMore = () => {
+    this.setState((prevState) => ({
+        page: prevState.page + 1,
+      }));
+  };
+
   render() {
-    const { pictures, error, status } = this.state;
+    const { pictures, error, status,} = this.state;
     // const { searchText } = this.props;
 
     if (status === 'idle') {
@@ -68,7 +71,12 @@ class ImageGallery extends Component {
       return <p className={css.idleText}>{error.message}</p>;
     }
     if (status === 'resolved') {
-      return <ImageGalleryItem pictures={pictures} />;
+      return (
+        <div>
+          <ImageGalleryItem pictures={pictures} />
+          <Button onClick={this.loadMore} title="Load more" />
+        </div>
+      );
     }
   }
 }

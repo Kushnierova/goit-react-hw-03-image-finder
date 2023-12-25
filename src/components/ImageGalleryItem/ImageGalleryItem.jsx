@@ -28,9 +28,9 @@ export class ImageGalleryItem extends Component {
             {showModal && (
               <Modal onClose={this.toggleModal}>
                 <img
-                  className={css.largeImageGalleryItem}
                   src={picture.largeImageURL}
                   alt={picture.tags}
+                  className={css.largeImageGalleryItem}
                 />
               </Modal>
             )}
