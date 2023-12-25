@@ -93,7 +93,7 @@ class ImageGallery extends Component {
           <ImageGalleryItem pictures={pictures} />
 
           {error?.message && (
-            <p className={css.errorMessage}>{error?.message}</p>
+            <p className={css.idleText}>{error?.message}</p>
           )}
 
           {/* {canLoadMore && <Button onClick={this.loadMore} title="Load more" />} */}

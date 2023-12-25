@@ -2,7 +2,7 @@ import css from './ImageGalleryItem.module.css';
 
 function ImageGalleryItem({ pictures }) {
   return (
-    <ul className={css.imageGallery}>
+    <ul className={css.gallery}>
       {pictures.map(picture => (
         <li className={css.item} key={picture.id}>
           <img
