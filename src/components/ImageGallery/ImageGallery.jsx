@@ -12,16 +12,14 @@ class ImageGallery extends Component {
     perPage: 12,
     page: 1,
     error: null,
+    showMoreButton: false,
     status: 'idle',
   };
 
   componentDidUpdate(prevProps, prevState) {
-    // const { page } = this.state;
     const { searchText } = this.props;
 
-    if (
-      prevProps.searchText !== searchText
-    ) {
+    if (prevProps.searchText !== searchText) {
       this.setState({ status: 'pending' });
       this.searchImages();
     }
@@ -30,19 +28,23 @@ class ImageGallery extends Component {
   searchImages = async () => {
     this.setState({ status: 'pending' });
     const { searchText } = this.props;
-    const { perPage,} = this.state;
+    const { perPage, page } = this.state;
 
     try {
-      const { hits } = await PixabayApi.getImages(searchText, perPage);
+      const response = await PixabayApi(searchText, perPage, page);
+      const pictures = response.hits;
+      const totalPictures = response.totalHits;
+      const totalPages = Math.ceil(totalPictures / 12);
 
       this.setState({
-        pictures: hits,
+        pictures: [...pictures],
         page: 1,
         status: 'resolved',
         error: null,
+        showMoreButton: totalPictures > 12 && totalPages > page,
       });
 
-      if (!hits.length) {
+      if (!pictures.length) {
         throw new Error(`No picture was found for "${searchText}"`);
       }
     } catch (error) {
@@ -50,14 +52,18 @@ class ImageGallery extends Component {
     }
   };
 
-  loadMore = () => {
+  loadMore = async () => {
+    const { searchText } = this.props;
+    const response = await PixabayApi(searchText);
+    const pictures = response.hits;
     this.setState(prevState => ({
-
+      pictures: [...prevState.pictures, ...pictures],
     }));
   };
 
   render() {
-    const { pictures, error, status } = this.state;
+    const { pictures, error, status, showMoreButton } = this.state;
+
     // const { searchText } = this.props;
 
     if (status === 'idle') {
@@ -80,7 +86,9 @@ class ImageGallery extends Component {
             {pictures.map(picture => (
               <ImageGalleryItem picture={picture} key={picture.id} />
             ))}
-            <Button onClick={this.loadMore} title="Load more" />
+            {showMoreButton && (
+              <Button onClick={this.loadMore} title="Load more" />
+            )}
           </ul>
         </div>
       );
