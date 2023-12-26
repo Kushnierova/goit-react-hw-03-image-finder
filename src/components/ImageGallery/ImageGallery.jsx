@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import css from './ImageGallery.module.css';
+import PropTypes from 'prop-types';
 import { PixabayApi } from 'components/services/api';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
@@ -7,7 +8,7 @@ import Button from 'components/Button';
 
 class ImageGallery extends Component {
   state = {
-    pictures: null,
+    pictures: [],
     perPage: 12,
     page: 1,
     error: null,
@@ -18,7 +19,9 @@ class ImageGallery extends Component {
     // const { page } = this.state;
     const { searchText } = this.props;
 
-    if (prevProps.searchText !== searchText) {
+    if (
+      prevProps.searchText !== searchText
+    ) {
       this.setState({ status: 'pending' });
       this.searchImages();
     }
@@ -27,7 +30,7 @@ class ImageGallery extends Component {
   searchImages = async () => {
     this.setState({ status: 'pending' });
     const { searchText } = this.props;
-    const { perPage } = this.state;
+    const { perPage,} = this.state;
 
     try {
       const { hits } = await PixabayApi.getImages(searchText, perPage);
@@ -48,13 +51,13 @@ class ImageGallery extends Component {
   };
 
   loadMore = () => {
-    this.setState((prevState) => ({
-        page: prevState.page + 1,
-      }));
+    this.setState(prevState => ({
+
+    }));
   };
 
   render() {
-    const { pictures, error, status,} = this.state;
+    const { pictures, error, status } = this.state;
     // const { searchText } = this.props;
 
     if (status === 'idle') {
@@ -73,11 +76,20 @@ class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <div>
-          <ImageGalleryItem pictures={pictures} />
-          <Button onClick={this.loadMore} title="Load more" />
+          <ul className={css.gallery}>
+            {pictures.map(picture => (
+              <ImageGalleryItem picture={picture} key={picture.id} />
+            ))}
+            <Button onClick={this.loadMore} title="Load more" />
+          </ul>
         </div>
       );
     }
   }
 }
+
+ImageGallery.propTypes = {
+  pictures: PropTypes.arrayOf(),
+  onClick: PropTypes.func,
+};
 export default ImageGallery;

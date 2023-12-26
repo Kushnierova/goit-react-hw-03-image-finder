@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Modal from 'components/Modal';
+import PropTypes from 'prop-types';
 import css from './ImageGalleryItem.module.css';
 
 export class ImageGalleryItem extends Component {
@@ -13,10 +14,8 @@ export class ImageGalleryItem extends Component {
 
   render() {
     const { showModal } = this.state;
-    const { pictures } = this.props;
+    const { picture } = this.props;
     return (
-      <ul className={css.gallery}>
-        {pictures.map(picture => (
           <li className={css.item} key={picture.id}>
             <img
               src={picture.webformatURL}
@@ -35,10 +34,17 @@ export class ImageGalleryItem extends Component {
               </Modal>
             )}
           </li>
-        ))}
-      </ul>
     );
   }
 }
+
+ImageGalleryItem.propTypes = {
+  picture: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    webformatURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
+    largeImageURL: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default ImageGalleryItem;
